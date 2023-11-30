@@ -42,9 +42,9 @@ labelMap = [
 syncNN = True
 def send_email(object_name):
     # Define email sender and receiver
-    email_sender = 'awabyounas1122@gmail.com'
-    email_password = 'mhfiwlrswgbkwbhb'
-    email_receiver = 'maryamriazf21@nutech.edu.pk'
+    email_sender = ''
+    email_password = ''
+    email_receiver = ''
 
     # Set the subject and body of the email
     subject = 'Emergency Fire Detected'
