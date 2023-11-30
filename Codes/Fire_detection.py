@@ -1,0 +1,188 @@
+
+
+"""
+The code is the same as for Tiny Yolo V3 and V4, the only difference is the blob file
+- Tiny YOLOv3: https://github.com/david8862/keras-YOLOv3-model-set
+- Tiny YOLOv4: https://github.com/TNTWEN/OpenVINO-YOLOV4
+"""
+import threading
+from email.message import EmailMessage
+import smtplib
+import ssl
+from pathlib import Path
+import sys
+import cv2
+import depthai as dai
+import numpy as np
+import time
+lock = threading.Lock()
+
+# Get argument first
+nnPath = str((Path(__file__).parent / Path('yolov5_fire.blob')).resolve().absolute())
+if 1 < len(sys.argv):
+    arg = sys.argv[1]
+    if arg == "yolo3":
+        nnPath = str((Path(__file__).parent / Path('../models/yolo-v3-tiny-tf_openvino_2021.4_6shave.blob')).resolve().absolute())
+    elif arg == "yolo4":
+        nnPath = str((Path(__file__).parent / Path('../models/yolo-v4-tiny-tf_openvino_2021.4_6shave.blob')).resolve().absolute())
+    else:
+        nnPath = arg
+else:
+    print("Using Tiny YoloV4 model. If you wish to use Tiny YOLOv3, call 'tiny_yolo.py yolo3'")
+
+# if not Path(nnPath).exists():
+#     import sys
+#     raise FileNotFoundError(f'Required file/s not found, please run "{sys.executable} install_requirements.py"')
+
+# tiny yolo v4 label texts
+labelMap = [
+    "Fire"
+]
+
+syncNN = True
+def send_email(object_name):
+    # Define email sender and receiver
+    email_sender = 'awabyounas1122@gmail.com'
+    email_password = 'mhfiwlrswgbkwbhb'
+    email_receiver = 'maryamriazf21@nutech.edu.pk'
+
+    # Set the subject and body of the email
+    subject = 'Emergency Fire Detected'
+    body = f"A ({object_name}) has been detected."
+
+    # Create an email message
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    em.set_content(body)
+
+    # Attach the image captured from the camera
+    filename = f'D:\\uni work\\ICAT 2\\Codes\SS\\captured_image_{object_name}.jpg'
+    with open(filename, 'rb') as f:
+        file_data = f.read()
+    em.add_attachment(file_data, maintype='image', subtype='jpg', filename=filename)
+
+    # Add SSL (layer of security)
+    context = ssl.create_default_context()
+
+    # Log in and send the email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+        smtp.login(email_sender, email_password)
+        smtp.send_message(em)
+
+    print('Email Sent')
+# Create pipeline
+pipeline = dai.Pipeline()
+
+# Define sources and outputs
+camRgb = pipeline.create(dai.node.ColorCamera)
+detectionNetwork = pipeline.create(dai.node.YoloDetectionNetwork)
+xoutRgb = pipeline.create(dai.node.XLinkOut)
+nnOut = pipeline.create(dai.node.XLinkOut)
+
+xoutRgb.setStreamName("rgb")
+nnOut.setStreamName("nn")
+
+# Properties
+camRgb.setPreviewSize(416, 416)
+camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
+camRgb.setInterleaved(False)
+camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
+camRgb.setFps(60)
+
+# Network specific settings
+detectionNetwork.setConfidenceThreshold(0.5)
+detectionNetwork.setNumClasses(1)
+detectionNetwork.setCoordinateSize(4)
+detectionNetwork.setAnchors([10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319])
+detectionNetwork.setAnchorMasks({"side26": [1, 2, 3], "side13": [3, 4, 5], "side52": [3, 4, 5]})
+detectionNetwork.setIouThreshold(0.5)
+detectionNetwork.setBlobPath(nnPath)
+detectionNetwork.setNumInferenceThreads(2)
+detectionNetwork.input.setBlocking(False)
+
+# Linking
+camRgb.preview.link(detectionNetwork.input)
+if syncNN:
+    detectionNetwork.passthrough.link(xoutRgb.input)
+else:
+    camRgb.preview.link(xoutRgb.input)
+
+detectionNetwork.out.link(nnOut.input)
+
+# Connect to device and start pipeline
+# iterr=0
+with dai.Device(pipeline) as device:
+
+    # Output queues will be used to get the rgb frames and nn data from the outputs defined above
+    qRgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
+    qDet = device.getOutputQueue(name="nn", maxSize=4, blocking=False)
+
+    frame = None
+    detections = []
+    startTime = time.monotonic()
+    counter = 0
+    color2 = (255, 255, 255)
+
+    # nn data, being the bounding box locations, are in <0..1> range - they need to be normalized with frame width/height
+    def frameNorm(frame, bbox):
+        normVals = np.full(len(bbox), frame.shape[0])
+        normVals[::2] = frame.shape[1]
+        return (np.clip(np.array(bbox), 0, 1) * normVals).astype(int)
+    def capture_image(frame, object_name):
+        # Capture the current frame from the camera
+        # and save it as an image file
+        filename = f'D:\\uni work\\ICAT 2\\Codes\SS\\captured_image_{object_name}.jpg'
+        cv2.imwrite(filename, frame)
+        print(f"Image captured: {filename}")
+    def process_detection(detection):
+        with lock:
+            if iterr == 6:
+                capture_image(frame, labelMap[(detection.label)])
+                send_email("fire")
+    def displayFrame(name, frame,itero):
+        color = (255, 0, 0)
+        for detection in detections:
+            bbox = frameNorm(frame, (detection.xmin, detection.ymin, detection.xmax, detection.ymax))
+            itero=itero+1
+            try:
+                # print (detection.label)
+                cv2.putText(frame, labelMap[(detection.label)], (bbox[0] + 10, bbox[1] + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
+                cv2.putText(frame, f"{int(detection.confidence * 100)}%", (bbox[0] + 10, bbox[1] + 40), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
+                cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
+                # print (iterr)
+                # for detection in detections:
+                threading.Thread(target=process_detection, args=(detection,)).start()
+
+                
+            except:
+                pass
+            
+        # Show the frame
+        cv2.imshow(name, frame)
+        return itero
+    iterr=0
+    while True:
+        if syncNN:
+            inRgb = qRgb.get()
+            inDet = qDet.get()
+        else:
+            inRgb = qRgb.tryGet()
+            inDet = qDet.tryGet()
+
+        if inRgb is not None:
+            frame = inRgb.getCvFrame()
+            cv2.putText(frame, "NN fps: {:.2f}".format(counter / (time.monotonic() - startTime)),
+                        (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.4, color2)
+
+        if inDet is not None:
+            detections = inDet.detections
+            counter += 1
+
+        if frame is not None:
+            iterr= displayFrame("rgb", frame,iterr)
+            
+
+        if cv2.waitKey(1) == ord('q'):
+            break
