@@ -1,6 +1,8 @@
 # Opti-Sentinel
 Opti Sentinel: Your robotic partner in the field
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1624937/_npNxPEia7V.blob?auto=compress%2Cformat&w=900&h=675&fit=min)
+
 ## INTRODUCTION
 
 This innovative project involves the seamless integration of a robotic arm onto a versatile rover platform, presenting a sophisticated solution for object manipulation and precise positioning. Complementing this setup is the integration of the OAK-D camera, a cutting-edge component designed to elevate safety measures across diverse environments, with a particular focus on construction sites and tower stations.
@@ -104,6 +106,7 @@ The Arduino Uno is one of the most popular and widely used microcontroller board
 
 8. **Open Source:**
    - The Arduino platform is open-source, which means its hardware and software designs are freely available for modification and redistribution.
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1655154/pic2_9V423mjNY4.png?auto=compress%2Cformat&w=740&h=555&fit=max)
 ##### 2.2.2. Raspberry Pi
 
@@ -149,6 +152,7 @@ The Raspberry Pi 4 is a popular single-board computer (SBC) developed by the Ras
 11. **Software and Community:**
     - The Raspberry Pi has a vibrant and active community of developers and enthusiasts who create a wide range of software and projects.
     - It's a versatile platform for learning about programming, electronics, and DIY projects.
+    
 ![Image](https://hackster.imgix.net/uploads/attachments/1655159/pic3_UISAVQLTA5.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 ##### 2.2.3. OpenCV AI kit with Depth (OAK – D)
 
@@ -190,6 +194,7 @@ The OpenCV AI Kit with Depth, often abbreviated as OAK-D, is a powerful vision a
 
 10. **Community and Documentation:**
     - Luxonis maintains a community and provides documentation, tutorials, and example projects to help developers get started with OAK-D.
+    
 ![Image](https://hackster.imgix.net/uploads/attachments/1655170/pic4_SgPlrWzkPU.png?auto=compress%2Cformat&w=740&h=555&fit=max)
 *OAK-D Camera .*
 
@@ -247,6 +252,7 @@ The Arduino IDE (Integrated Development Environment) is a software application u
 ## 2.3.6. App Development
 
 ![Image](https://hackster.imgix.net/uploads/attachments/1655204/pic8_A8UrFSplL7.png?auto=compress%2Cformat&w=740&h=555&fit=max)
+
 Users can precisely control each servo or axis of the robot arm through application sliders. The "Save" button documents positions or steps, enabling automatic replication. It also serves to pause autonomous operations and offers the option to reset or erase saved steps for creating new sequences.
 
 # Chapter 3
@@ -257,14 +263,17 @@ Opti Sentinel utilizes advanced vision technology to distinguish between workers
 ## 3.1. Fall Detection
 
 OpenCV, when combined with the OAK-D camera, contributes to robust fall detection capabilities. Through image analysis, the system can swiftly identify anomalies, such as a person falling from height, triggering prompt responses and mitigating potential accidents.
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1655173/pic5_XS86dMqTVe.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 ## 3.2. Fire Detection
 
 Leveraging OpenCV's image processing algorithms enhances the OAK-D camera's ability to detect flames in real-time. This not only ensures swift identification of fire outbreaks but also enables the system to take immediate preventive measures, bolstering safety protocols.
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1655175/pic6_Is9Z2h5qCf.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 ## 3.3. Cone Detection
 
 With its advanced vision technology, Opti Sentinel can identify and signal the presence of obstacles like cones. This feature contributes to overall site safety by preventing potential tripping hazards and enhancing hazard awareness.
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1655176/pic7_y63aq0VKzX.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 
 ## DISCUSSION AND CONCLUSION
@@ -286,6 +295,7 @@ Both YOLOv8 and YOLOv5 are easy to use, with YOLOv5 being the easiest to use of 
 When it comes to object detection, there are many models available. However, YOLOv8 and YOLOv5 are two of the most popular and state-of-the-art models created by Ultralytics.
 
 Hence, we use YOLOv5 for fire detection, and YOLOv8 for fall detection and cone detection.
+
 ![Image](https://hackster.imgix.net/uploads/attachments/1655153/pic1_JTIMhUilQu.jpg?auto=compress%2Cformat&w=740&h=555&fit=max)
 
 
