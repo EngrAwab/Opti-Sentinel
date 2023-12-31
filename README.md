@@ -196,7 +196,7 @@ The OpenCV AI Kit with Depth, often abbreviated as OAK-D, is a powerful vision a
     - Luxonis maintains a community and provides documentation, tutorials, and example projects to help developers get started with OAK-D.
     
 ![Image](https://hackster.imgix.net/uploads/attachments/1655170/pic4_SgPlrWzkPU.png?auto=compress%2Cformat&w=740&h=555&fit=max)
-*OAK-D Camera .*
+
 
 # 2.2.4. OAK-D Camera Integration
 
@@ -255,7 +255,6 @@ The Arduino IDE (Integrated Development Environment) is a software application u
 
 Users can precisely control each servo or axis of the robot arm through application sliders. The "Save" button documents positions or steps, enabling automatic replication. It also serves to pause autonomous operations and offers the option to reset or erase saved steps for creating new sequences.
 
-# Chapter 3
 ## RESULTS AND ANALYSIS
 
 Opti Sentinel utilizes advanced vision technology to distinguish between workers adhering to safety protocols and those not in compliance. This continuous monitoring guarantees consistent safety practices among all workers. OpenCV facilitates advanced image processing and computer vision techniques, enabling the robotic arm to accurately manipulate and interact with objects. This capability enhances the project's overall functionality in tasks requiring precise object handling.
